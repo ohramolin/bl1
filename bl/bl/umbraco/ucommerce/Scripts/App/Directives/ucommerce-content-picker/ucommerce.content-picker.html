@@ -1,0 +1,25 @@
+﻿<div class="imagePicker">
+    <div class="sectionGroupHeader">
+        <input id="uc-headline" type=text disabled="disabled" class="entityName uc-headline readOnly" value="{{dialogHeaderText}}" />
+        <p class="guiDialogTiny">{{dialogHeaderTinyText}}</p>
+    </div>
+    <div class="imagePickerContainer propertyPane">
+        <div class="imagePickerContainerBody propertyItem">
+            <div class="imagePickerContainerTreeContainer propertyItemContent" ng-style="contentStyle()">
+                <ucommerce-content-tree class="tree" content-picker-type="contentPickerType" load-on-compile="true" tree="data"></ucommerce-content-tree>
+            </div>
+            <div class="imagePickerContainerPreview" data-ng-show="showImagePreview()">
+                <img ng-src="{{imagePreviewUrl}}" class="imagePreview" id="selectedImagePreview" />
+            </div>
+        </div>
+    </div>
+    <p style="padding-left: 10px;">
+        <input data-ng-click="SavePicture($event)" type="button" value="{{saveText}}" />
+        <em style="margin: 10px;">{{orText}}</em>
+        <a data-ng-click="closeContainer($event)" style="color: blue; cursor:pointer;">{{cancelText}}</a>
+    </p>		
+    <img ng-src="{{ImageUrl}}" data-ng-show="showImage()" class="{{ImageClasses}}" id="selectedImage"/>
+</div>
+
+
+

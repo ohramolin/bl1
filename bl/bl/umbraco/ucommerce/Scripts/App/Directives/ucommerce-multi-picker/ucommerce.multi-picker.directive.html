@@ -1,0 +1,22 @@
+﻿<div class="contentTree multiPicker">
+	<div>
+		<span class="multiPickerHeaderText treeHeaderText">{{treeHeaderText}}</span>
+		<span class="multiPickerHeaderText selectedItemsHeaderText">{{selectedItemsHeaderText}}</span>
+	</div>
+	<div class="multiPickerAction">
+		<div class="multiPickerTree">
+			<ucommerce-tree tree="tree" has-right-click-menu="false" has-checkbox-for="hasCheckboxFor" pre-selected-values="preSelectedValues" selected-node-style="selectedNodeStyle" content-picker-type="contentPickerType" icon-folder="iconFolder"></ucommerce-tree>
+		</div>
+		<div class="selectedNodes">
+			<div class="selectedNode" data-ng-repeat="selectedNode in selectedNodes">
+				<div class="removeIcon" ng-click="removeNodeClick(selectedNode)">
+					<img ng-src="{{getDeleteImageIcon()}}" />
+				</div>
+				<div class="node">
+					<span ng-style="getNodeIconStyle(selectedNode.icon)" class="selectedNodeName">{{selectedNode.name}}</span>
+				</div>
+			</div>
+		</div>
+	</div>
+    <input type="hidden" name="{{formName}}" value="{{getPreSelectedValues()}}" />
+</div>

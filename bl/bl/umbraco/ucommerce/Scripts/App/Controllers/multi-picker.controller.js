@@ -1,0 +1,162 @@
+﻿function uc_multiPickerController($scope, $rootScope, $window, $location, $q, uCommerceContentService) {
+
+	$scope.treeHeaderText = 'Available items';
+	$scope.selectedItemsHeaderText = 'Selected items';
+	$scope.selectedNodes = [];
+	$scope.getPreSelectedValues = function () {
+		return $scope.preSelectedValues;
+	};
+
+	$scope.getPreSelectedValuesString = function () {
+		var preselectedValues = '';
+		var first = true;
+
+		for (n in $scope.preSelectedValues) {
+			if (first) {
+				first = false;
+				preselectedValues += $scope.preSelectedValues[n];
+			} else {
+				preselectedValues += ',';
+				preselectedValues += $scope.preSelectedValues[n];
+			}
+		}
+
+		return preselectedValues;
+	};
+
+
+	$scope.updatePreselectedValues = function() {
+		var preselectedValues = '';
+		var first = true;
+
+		for (n in $scope.selectedNodes) {
+			if (first) {
+				first = false;
+				preselectedValues += $scope.selectedNodes[n].id;
+			} else {
+				preselectedValues += ',';
+				preselectedValues += $scope.selectedNodes[n].id;
+			}
+		}
+		$scope.preSelectedValues = preselectedValues;
+	}
+
+	$scope.$watch('selectedNodes', function () {
+		if ($scope.selectedNodes.size > 0) {
+			$scope.updatePreselectedValues();
+		}
+	});
+
+	$scope.$on('toggleSelectedNode', function (event, node) {
+
+		for (n in $scope.selectedNodes) {
+			var selectedNode = $scope.selectedNodes[n];
+			if (selectedNode.id == node.id && selectedNode.nodeType == node.nodeType) {
+				$scope.selectedNodes.splice(n, 1);
+				$scope.updatePreselectedValues();
+				return;
+			}
+		}
+
+		$scope.selectedNodes.push({
+			id: node.id,
+			name: node.name,
+			nodeType: node.nodeType,
+			icon: node.icon
+		});
+
+		$scope.updatePreselectedValues();
+	});
+
+	$scope.removeNodeClick = function(node) {
+		for (n in $scope.selectedNodes) {
+			var selectedNode = $scope.selectedNodes[n];
+			if (selectedNode.id == node.id && selectedNode.nodeType == node.nodeType) {
+				$scope.selectedNodes.splice(n, 1);
+				break;
+			}
+		}
+
+		$scope.updatePreselectedValues();
+	}
+
+	$scope.loadPreselectedNodes = function () {
+
+		var first = true;
+		var preSelectedValues = $scope.getPreSelectedValues();
+		var preSelectedValuesString = '';
+		for (n in preSelectedValues) {
+			if (first) {
+				first = false;
+				preSelectedValuesString += preSelectedValues[n];
+			} else {
+				preSelectedValuesString += ',';
+				preSelectedValuesString += preSelectedValues[n];
+			}
+		}
+
+		uCommerceContentService.getNodes($scope.hasCheckboxFor, preSelectedValuesString).then(function(response) {
+			var data = response.data;
+			for (n in data) {
+				$scope.selectedNodes.push({
+					id: data[n].id,
+					name: data[n].name,
+					nodeType: data[n].nodeType,
+					icon: data[n].icon
+				});
+			}
+			$scope.updatePreselectedValues();
+		});
+	}
+
+	$scope.getNodeIconStyle = function (icon) {
+		if ($scope.iconFolderOverwrite) {
+			return $scope.iconFolderOverwrite + icon;
+		}
+		if (icon) {
+			if (UCommerceClientMgr.Shell == 'Sitecore') {
+				if ($scope.iconFolder == 'uCommerce') {
+					var object = {
+						'background-image': 'url("' + UCommerceClientMgr.BaseUCommerceUrl + 'shell/content/images/ui/' + icon + '")'
+					};
+					return object;
+				} else {
+					return {
+						'background-image': 'url("' + icon + '")'
+					};
+				}
+			}
+			if (UCommerceClientMgr.Shell == 'Umbraco7') {
+				var lowerCaseIcon = icon.toLowerCase();
+				if ($scope.iconFolder == 'uCommerce') {
+					return {
+						'background-image': 'url("/umbraco/ucommerce/images/ui/' + icon + '")',
+						'background-repeat': 'no-repeat',
+					};
+				}
+				if ((lowerCaseIcon.indexOf('.png') != -1) ||
+				(lowerCaseIcon.indexOf('.gif') != -1) ||
+				(lowerCaseIcon.indexOf('.jpg') != -1)) {
+					return {
+						'background-image': 'url("/umbraco/images/umbraco/' + icon + '")',
+						'background-repeat': 'no-repeat',
+						'padding-left': '16px'
+					};
+				}
+			}
+			if (UCommerceClientMgr.Shell == 'Umbraco') {
+				if ($scope.iconFolder == 'uCommerce') {
+					return {
+						'background-image': 'url("/umbraco/uCommerce/images/ui/' + icon + '")',
+						'background-repeat': 'no-repeat',
+						'padding-left': '16px'
+					};
+				}
+			}
+		}
+	}
+
+	$scope.getDeleteImageIcon = function() {
+		return UCommerceClientMgr.BaseUCommerceUrl + 'images/deleteCross.png';
+	}
+}
